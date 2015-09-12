@@ -48,8 +48,6 @@ public class HazelcastConnection {
                 try {
                     String[] values = line.split(",");
                     citationToPutInHaz = new Citation();
-
-                    DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
                     DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
 
                     key = values[0];
@@ -64,13 +62,13 @@ public class HazelcastConnection {
                     citationToPutInHaz.setCourtAddress(values[12]);
 
                     try {
-                        citationToPutInHaz.setCitationDate(new Date(dtf.parseDateTime(values[2].split(" ")[0]).getMillis()));
+                        citationToPutInHaz.setCitationDate(new Date(dtf.parseMillis(values[2].split(" ")[0])));
                     } catch (IllegalArgumentException e) {/*literally cancer*/}
                     try {
-                        citationToPutInHaz.setDateOfBirth(new Date(dtf.parseDateTime(values[5].split(" ")[0]).getMillis()));
+                        citationToPutInHaz.setDateOfBirth(new Date(dtf.parseMillis(values[5].split(" ")[0])));
                     } catch (IllegalArgumentException e) {/*literally cancer*/}
                     try {
-                        citationToPutInHaz.setCourtDate(new Date(dtf.parseDateTime(values[10].split(" ")[0]).getMillis()));
+                        citationToPutInHaz.setCourtDate(new Date(dtf.parseMillis(values[10].split(" ")[0])));
                     } catch (IllegalArgumentException e) {/*literally cancer*/}
 
                     hazelcastConnection.getMap(CitationNamespace).put(key, citation);
@@ -93,7 +91,7 @@ public class HazelcastConnection {
             while((line = bufferedReader.readLine()) != null) {
                 String[] values = line.split(",");
                 Violation violationToPutInHaz = new Violation();
-                DateFormat df = DateFormat.getDateInstance();
+                DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
 
                 String key = values[0];
 
@@ -102,14 +100,16 @@ public class HazelcastConnection {
                 violationToPutInHaz.setViolationDescription(values[3]);
                 violationToPutInHaz.setWarrantStatus(parseTOrF(values[4]));
                 violationToPutInHaz.setWarrantNumber(values[5]);
-                violationToPutInHaz.setStatus(Violation.Status.valueOf(values[6]));
-                violationToPutInHaz.setStatusDate(df.parse(values[7]));
+                try {
+                    violationToPutInHaz.setStatus(Violation.Status.valueOf(values[6]));
+                } catch (IllegalArgumentException ex) { /* */ }
+                violationToPutInHaz.setStatusDate(new Date(dtf.parseMillis(values[7])));
                 violationToPutInHaz.setFineAmount(values[8]);
                 violationToPutInHaz.setCourtCost(values[9]);
 
                 hazelcastConnection.getMap(ViolationNamespace).put(key, violationToPutInHaz);
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
