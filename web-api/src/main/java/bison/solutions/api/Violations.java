@@ -28,8 +28,8 @@ public class Violations {
     @Path("CitationNumber/{citationNumber}")
     public List<Violation> getViolationsByCitationNumber(@PathParam("citationNumber") String citationNumber) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
-        JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.CitationNamespace);
-        KeyValueSource<String, Violation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
+        JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.ViolationNamespace);
+        KeyValueSource<String, Violation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.ViolationNamespace));
         Job<String, Violation> jobs = jobTracker.newJob(source);
 
         Map<String, List<Violation>> map = jobs.mapper(
