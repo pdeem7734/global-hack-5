@@ -2,10 +2,7 @@ package bison.solutions.api;
 
 import bison.solutions.hazelcast.HazelcastConnection;
 import bison.solutions.domain.Citation;
-import bison.solutions.mapper.DoBMapper;
-import bison.solutions.mapper.EndMapper;
-import bison.solutions.mapper.FirstAndLastNameMapper;
-import bison.solutions.mapper.LicenseMapper;
+import bison.solutions.mapper.*;
 import bison.solutions.reducer.ListReducer;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
@@ -22,6 +19,29 @@ import java.util.concurrent.ExecutionException;
 public class Tickets {
 
     HazelcastConnection hazelcastConnection;
+
+    @GET
+    @Consumes("*/*")
+    @Produces("application/json")
+    @Path("/CitationNumber/{citationNumber}")
+    public Citation getCitationByCitationNumber(@PathParam("citationNumber") String citationNumber) throws ExecutionException, InterruptedException {
+        hazelcastConnection = HazelcastConnection.hazelcastConnection;
+        JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.CitationNamespace);
+        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
+        Job<String, Citation> jobs = jobTracker.newJob(source);
+
+        Map<String, List<Citation>> map = jobs.mapper(
+                new CitationNumberMapper(Long.parseLong(citationNumber),
+                        new EndMapper<>()))
+                .reducer(new ListReducer<>())
+                .submit().get();
+
+        List<Citation> returnMe = new LinkedList<>();
+        map.values().stream().forEach(returnMe::addAll);
+        if (returnMe.size() !=  0) return returnMe.get(0);
+        return null;
+    }
+
 
     @GET
     @Consumes("*/*")
