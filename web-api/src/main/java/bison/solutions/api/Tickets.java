@@ -1,6 +1,6 @@
 package bison.solutions.api;
 
-import bison.soltuons.hazelcast.HazelcastConnection;
+import bison.solutions.hazelcast.HazelcastConnection;
 import bison.solutions.domain.Citation;
 import bison.solutions.mapper.EndMapper;
 import bison.solutions.mapper.FirstAndLastNameMapper;

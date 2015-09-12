@@ -1,8 +1,7 @@
-package bison.soltuons.hazelcast;
+package bison.solutions.hazelcast;
 
 import bison.solutions.domain.Citation;
 import bison.solutions.domain.Violation;
-import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.joda.time.format.DateTimeFormat;
@@ -25,19 +24,24 @@ public class HazelcastConnection {
     @PostConstruct
     private void makeMeAthing() {
         hazelcastInstance = Hazelcast.newHazelcastInstance();
-        File citation = new File(System.getProperty("citations.csv"));
-        File violations = new File(System.getProperty("violations.csv"));
+        InputStream citation = null;
+        InputStream violations = null;
+        try {
+            citation = HazelcastConnection.class.getResource("citations.csv").openStream();
+            violations = HazelcastConnection.class.getResource("violations.csv").openStream();
 
-        //putViolationsInHazelcast(violations);
-        putCitationsInHazelcast(citation);
+            putViolationsInHazelcast(violations);
+            putCitationsInHazelcast(citation);
         hazelcastConnection = this;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
-    private void putCitationsInHazelcast(File citation) {
+    private void putCitationsInHazelcast(InputStream citation) {
 
-        try(FileInputStream fileInputStream = new FileInputStream(citation);
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+        try(InputStreamReader inputStreamReader = new InputStreamReader(citation);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
 
             String line;
@@ -81,9 +85,8 @@ public class HazelcastConnection {
         }
     }
 
-    private void putViolationsInHazelcast(File violation) {
-        try (FileInputStream fileInputStream = new FileInputStream(violation);
-             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+    private void putViolationsInHazelcast(InputStream violation) {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(violation);
              BufferedReader bufferedReader = new BufferedReader(inputStreamReader)){
 
             String line;
@@ -94,18 +97,19 @@ public class HazelcastConnection {
                 DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
 
                 String key = values[0];
-
-                violationToPutInHaz.setCitationNumber(Long.parseLong(values[1]));
-                violationToPutInHaz.setViolationNumber(values[2]);
-                violationToPutInHaz.setViolationDescription(values[3]);
-                violationToPutInHaz.setWarrantStatus(parseTOrF(values[4]));
-                violationToPutInHaz.setWarrantNumber(values[5]);
                 try {
-                    violationToPutInHaz.setStatus(Violation.Status.valueOf(values[6]));
-                } catch (IllegalArgumentException ex) { /* */ }
-                violationToPutInHaz.setStatusDate(new Date(dtf.parseMillis(values[7])));
-                violationToPutInHaz.setFineAmount(values[8]);
-                violationToPutInHaz.setCourtCost(values[9]);
+                    violationToPutInHaz.setCitationNumber(Long.parseLong(values[1]));
+                    violationToPutInHaz.setViolationNumber(values[2]);
+                    violationToPutInHaz.setViolationDescription(values[3]);
+                    violationToPutInHaz.setWarrantStatus(parseTOrF(values[4]));
+                    violationToPutInHaz.setWarrantNumber(values[5]);
+                    try {
+                        violationToPutInHaz.setStatus(Violation.Status.valueOf(values[6]));
+                    } catch (IllegalArgumentException ex) { /* */ }
+                    violationToPutInHaz.setStatusDate(new Date(dtf.parseMillis(values[7])));
+                    violationToPutInHaz.setFineAmount(values[8]);
+                    violationToPutInHaz.setCourtCost(values[9]);
+                } catch (ArrayIndexOutOfBoundsException e) { }
 
                 hazelcastInstance.getMap(ViolationNamespace).put(key, violationToPutInHaz);
             }
