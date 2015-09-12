@@ -1,6 +1,7 @@
 package bison.solutions.hazelcast;
 
 import bison.solutions.domain.Citation;
+import bison.solutions.domain.Court;
 import bison.solutions.domain.Violation;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -18,21 +19,60 @@ import java.util.Date;
 public class HazelcastConnection {
     public static HazelcastConnection hazelcastConnection;
     public HazelcastInstance hazelcastInstance;
+
     public final String CitationNamespace = "ciations";
     public final String ViolationNamespace = "violations";
+    public final String CourtNamespace = "court";
 
     @PostConstruct
     private void makeMeAthing() {
         hazelcastInstance = Hazelcast.newHazelcastInstance();
         InputStream citation = null;
         InputStream violations = null;
+        InputStream court = null;
         try {
             citation = HazelcastConnection.class.getResource("citations.csv").openStream();
             violations = HazelcastConnection.class.getResource("violations.csv").openStream();
+            court = HazelcastConnection.class.getResource("courts.csv").openStream();
 
+            putCourtsInHazelcast(court);
             putViolationsInHazelcast(violations);
             putCitationsInHazelcast(citation);
         hazelcastConnection = this;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void putCourtsInHazelcast(InputStream stream) {
+        try(InputStreamReader inputStreamReader = new InputStreamReader(stream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+
+            String line;
+            bufferedReader.readLine();
+            Court court = null;
+            String key = "";
+            while((line = bufferedReader.readLine()) != null) {
+                try {
+                    String[] values = line.split(",");
+                    court = new Court();
+                    DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
+
+                    key = values[0];
+
+                    court.setMunicipality(key);
+                    court.setMunicipalCourt(values[1]);
+                    court.setMunicipalWebsite(values[2]);
+                    court.setMunicipalCourtWebsite(values[3]);
+                    court.setClerkPhoneNumber(values[5]);
+                    if (!values[6].equals("N/A") && !values[6].equals("")) court.setOnlinePayment(true);
+                    else court.setOnlinePayment(false);
+
+                    hazelcastInstance.getMap(CourtNamespace).put(key, court);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    hazelcastInstance.getMap(CourtNamespace).put(key, court);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
