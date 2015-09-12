@@ -40,7 +40,7 @@ public class Tickets {
 
         List<Citation> returnMe = new LinkedList<>();
         for (List<Citation> list : map.values()) {
-            returnMe.addAll(returnMe);
+            returnMe.addAll(list);
         }
         if (returnMe.size() !=  0) return returnMe.get(0);
         return null;
@@ -67,7 +67,7 @@ public class Tickets {
 
         List<Citation> returnMe = new LinkedList<>();
         for (List<Citation> list : map.values()) {
-            returnMe.addAll(returnMe);
+            returnMe.addAll(list);
         }
         return returnMe;
     }
@@ -95,7 +95,7 @@ public class Tickets {
 
         List<Citation> returnMe = new LinkedList<>();
         for (List<Citation> list : map.values()) {
-            returnMe.addAll(returnMe);
+            returnMe.addAll(list);
         }
         return returnMe;
     }
@@ -124,7 +124,7 @@ public class Tickets {
 
         List<Citation> returnMe = new LinkedList<>();
         for (List<Citation> list : map.values()) {
-            returnMe.addAll(returnMe);
+            returnMe.addAll(list);
         }
         return returnMe.get(0);
     }
