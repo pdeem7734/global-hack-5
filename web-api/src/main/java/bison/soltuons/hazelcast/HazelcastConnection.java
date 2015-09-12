@@ -4,17 +4,13 @@ import bison.solutions.domain.Citation;
 import bison.solutions.domain.Violation;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Date;
 
 @Startup

@@ -8,7 +8,6 @@ import bison.solutions.reducer.ListReducer;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
-import javafx.scene.shape.Circle;
 
 import javax.ejb.EJB;
 import javax.ws.rs.GET;
