@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Violation implements Serializable {
-    private enum Status {
+    public enum Status {
         CONT_FOR_PAYMENT("CONT FOR PAYMENT"),
         FTA_WARRENT_ISSUED("FTA WARRANT ISSUED"),
         DISMISS_WITHOUT_COSTS("DISMISS WITHOUT COSTS"),

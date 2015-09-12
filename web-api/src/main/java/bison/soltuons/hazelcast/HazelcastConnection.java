@@ -1,6 +1,7 @@
 package bison.soltuons.hazelcast;
 
 import bison.solutions.domain.Citation;
+import bison.solutions.domain.Violation;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
@@ -18,6 +19,7 @@ import java.text.ParseException;
 public class HazelcastConnection {
     public HazelcastInstance hazelcastConnection;
     public final String CitationNamespace = "ciations";
+    public final String ViolationNamespace = "violations";
     @PostConstruct
     private void makeMeAthing() {
         hazelcastConnection = HazelcastClient.newHazelcastClient();
@@ -44,8 +46,8 @@ public class HazelcastConnection {
                 DateFormat df = DateFormat.getDateInstance();
 
                 String key = values[0];
-                System.out.println("I'm Working!");
-                citationToPutInHaz.setCitationNumber(Integer.parseInt(values[1]));
+
+                citationToPutInHaz.setCitationNumber(Long.parseLong(values[1]));
                 citationToPutInHaz.setCitationDate(df.parse(values[2]));
                 citationToPutInHaz.setFirstName(values[3]);
                 citationToPutInHaz.setLastName(values[4]);
@@ -65,7 +67,38 @@ public class HazelcastConnection {
         }
     }
 
-    private void putViolationsInHazelcast(File citation) {
+    private void putViolationsInHazelcast(File violation) {
+        try (FileInputStream fileInputStream = new FileInputStream(violation);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)){
 
+            String line;
+            bufferedReader.readLine();
+            while((line = bufferedReader.readLine()) != null) {
+                String[] values = line.split(",");
+                Violation violationToPutInHaz = new Violation();
+                DateFormat df = DateFormat.getDateInstance();
+
+                String key = values[0];
+
+                violationToPutInHaz.setCitationNumber(Long.parseLong(values[1]));
+                violationToPutInHaz.setViolationNumber(values[2]);
+                violationToPutInHaz.setViolationDescription(values[3]);
+                violationToPutInHaz.setWarrantStatus(parseTOrF(values[4]));
+                violationToPutInHaz.setWarrantNumber(values[5]);
+                violationToPutInHaz.setStatus(Violation.Status.valueOf(values[6]));
+                violationToPutInHaz.setStatusDate(df.parse(values[7]));
+                violationToPutInHaz.setFineAmount(values[8]);
+                violationToPutInHaz.setCourtCost(values[9]);
+
+                hazelcastConnection.getMap(ViolationNamespace).put(key, violationToPutInHaz);
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean parseTOrF(String tOrF) {
+        return tOrF.equals("TRUE");
     }
 }
