@@ -1,7 +1,5 @@
 package bison.solutions.api;
 
-import jdk.nashorn.internal.runtime.logging.Logger;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
