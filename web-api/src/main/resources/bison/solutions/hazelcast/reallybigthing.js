@@ -1,12 +1,7 @@
 {
-    "name"
-:
-    "courts", "type"
-:
-    "FeatureCollection"
-        , "features"
-:
-    [
+    "name" : "courts",
+    "type" : "FeatureCollection",
+    "features":    [
         {
             "type": "Feature",
             "geometry": {
