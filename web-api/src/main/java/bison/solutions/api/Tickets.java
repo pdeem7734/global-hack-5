@@ -34,7 +34,9 @@ public class Tickets {
         KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
         Job<String, Citation> jobs = jobTracker.newJob(source);
 
-        Map<String, List<Citation>> map = jobs.mapper(new FirstAndLastNameMapper(firstName, lastName, new EndMapper<>()))
+        Map<String, List<Citation>> map = jobs.mapper(
+                new FirstAndLastNameMapper(firstName, lastName,
+                        new EndMapper<>()))
                 .reducer(new ListReducer<>())
                 .submit().get();
 
@@ -56,7 +58,10 @@ public class Tickets {
         KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
         Job<String, Citation> jobs = jobTracker.newJob(source);
 
-        Map<String, List<Citation>> map = jobs.mapper(new FirstAndLastNameMapper(firstName, lastName, new DoBMapper(new Date(Long.parseLong(dateOfBirth)), new EndMapper<>())))
+        Map<String, List<Citation>> map = jobs.mapper(
+                new FirstAndLastNameMapper(firstName, lastName,
+                        new DoBMapper(new Date(Long.parseLong(dateOfBirth)),
+                                new EndMapper<>())))
                 .reducer(new ListReducer<>())
                 .submit().get();
 
@@ -81,7 +86,8 @@ public class Tickets {
         Map<String, List<Citation>> map = jobs.mapper(
                 new FirstAndLastNameMapper(firstName, lastName,
                         new DoBMapper(new Date(Long.parseLong(dateOfBirth)),
-                                new LicenseMapper(license, new EndMapper<>()))))
+                                new LicenseMapper(license,
+                                        new EndMapper<>()))))
                 .reducer(new ListReducer<>())
                 .submit().get();
 
