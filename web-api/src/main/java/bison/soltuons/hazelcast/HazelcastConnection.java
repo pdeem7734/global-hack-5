@@ -4,6 +4,8 @@ import bison.solutions.domain.Citation;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -12,6 +14,7 @@ import javax.ejb.Startup;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
 
 @Startup
 @Singleton
@@ -37,30 +40,43 @@ public class HazelcastConnection {
 
             String line;
             bufferedReader.readLine();
+            Citation citationToPutInHaz;
+            String key = "";
             while((line = bufferedReader.readLine()) != null) {
-                String[] values = line.split(",");
-                Citation citationToPutInHaz = new Citation();
+                try {
+                    String[] values = line.split(",");
+                    citationToPutInHaz = new Citation();
 
-                DateFormat df = DateFormat.getDateInstance();
+                    DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+                    DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
 
-                String key = values[0];
-                System.out.println("I'm Working!");
-                citationToPutInHaz.setCitationNumber(Integer.parseInt(values[1]));
-                citationToPutInHaz.setCitationDate(df.parse(values[2]));
-                citationToPutInHaz.setFirstName(values[3]);
-                citationToPutInHaz.setLastName(values[4]);
-                citationToPutInHaz.setDateOfBirth(df.parse(values[5]));
-                citationToPutInHaz.setDefendentAddress(values[6]);
-                citationToPutInHaz.setDefendentCity(values[7]);
-                citationToPutInHaz.setDefendentState(values[8]);
-                citationToPutInHaz.setDriversLicenseNumber(values[9]);
-                citationToPutInHaz.setCourtDate(df.parse(values[10]));
-                citationToPutInHaz.setCourtLocation(values[11]);
-                citationToPutInHaz.setCourtAddress(values[12]);
+                    key = values[0];
+                    citationToPutInHaz.setCitationNumber(Integer.parseInt(values[1]));
+                    citationToPutInHaz.setFirstName(values[3]);
+                    citationToPutInHaz.setLastName(values[4]);
+                    citationToPutInHaz.setDefendentAddress(values[6]);
+                    citationToPutInHaz.setDefendentCity(values[7]);
+                    citationToPutInHaz.setDefendentState(values[8]);
+                    citationToPutInHaz.setDriversLicenseNumber(values[9]);
+                    citationToPutInHaz.setCourtLocation(values[11]);
+                    citationToPutInHaz.setCourtAddress(values[12]);
 
-                hazelcastConnection.getMap(CitationNamespace).put(key, citation);
+                    try {
+                        citationToPutInHaz.setCitationDate(new Date(dtf.parseDateTime(values[2].split(" ")[0]).getMillis()));
+                    } catch (IllegalArgumentException e) {/*literally cancer*/}
+                    try {
+                        citationToPutInHaz.setDateOfBirth(new Date(dtf.parseDateTime(values[5].split(" ")[0]).getMillis()));
+                    } catch (IllegalArgumentException e) {/*literally cancer*/}
+                    try {
+                        citationToPutInHaz.setCourtDate(new Date(dtf.parseDateTime(values[10].split(" ")[0]).getMillis()));
+                    } catch (IllegalArgumentException e) {/*literally cancer*/}
+
+                    hazelcastConnection.getMap(CitationNamespace).put(key, citation);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    hazelcastConnection.getMap(CitationNamespace).put(key, citation);
+                }
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
