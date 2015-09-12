@@ -1,4 +1,4 @@
-package bison.solutions;
+package bison.solutions.domain;
 
 import java.util.Date;
 
@@ -16,7 +16,7 @@ public class Violation {
             return status;
         }
     }
-    
+
     private long id;
     private long citationNumber;
     private String violationNumber;
