@@ -14,7 +14,7 @@ public class Tickets {
     @Path("/FirstName/{firstName}/LastName/{lastName}")
     public List<Citation> getTicketsByName(@PathParam("firstName") String firstName,
                                          @PathParam("lastName") String lastName) {
-        return null;
+
     }
 
     @GET

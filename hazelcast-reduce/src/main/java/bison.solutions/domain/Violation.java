@@ -1,8 +1,9 @@
 package bison.solutions.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Violation {
+public class Violation implements Serializable {
     private enum Status {
         CONT_FOR_PAYMENT("CONT FOR PAYMENT"),
         FTA_WARRENT_ISSUED("FTA WARRANT ISSUED"),

@@ -1,8 +1,9 @@
 package bison.solutions.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Citation {
+public class Citation implements Serializable {
     private long id;
     private long citationNumber;
     private Date citationDate;
