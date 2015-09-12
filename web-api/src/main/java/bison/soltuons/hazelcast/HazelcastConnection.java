@@ -3,6 +3,7 @@ package bison.soltuons.hazelcast;
 import bison.solutions.domain.Citation;
 import bison.solutions.domain.Violation;
 import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -23,7 +24,7 @@ public class HazelcastConnection {
 
     @PostConstruct
     private void makeMeAthing() {
-        hazelcastInstance = HazelcastClient.newHazelcastClient();
+        hazelcastInstance = Hazelcast.newHazelcastInstance();
         File citation = new File(System.getProperty("citations.csv"));
         File violations = new File(System.getProperty("violations.csv"));
 
