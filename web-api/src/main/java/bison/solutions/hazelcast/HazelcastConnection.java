@@ -2,9 +2,14 @@ package bison.solutions.hazelcast;
 
 import bison.solutions.domain.Citation;
 import bison.solutions.domain.Court;
+import bison.solutions.domain.ReallyBigThing;
 import bison.solutions.domain.Violation;
+import bison.solutions.domain.smaller.things.Feature;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -13,6 +18,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import java.io.*;
 import java.util.Date;
+import java.util.Set;
 
 @Startup
 @Singleton
@@ -23,6 +29,7 @@ public class HazelcastConnection {
     public final String CitationNamespace = "ciations";
     public final String ViolationNamespace = "violations";
     public final String CourtNamespace = "court";
+    public final String bigThingNamespace = "bigthing";
 
     @PostConstruct
     private void makeMeAthing() {
@@ -30,6 +37,7 @@ public class HazelcastConnection {
         InputStream citation = null;
         InputStream violations = null;
         InputStream court = null;
+        InputStream reallybigthing = null;
         try {
             citation = HazelcastConnection.class.getResource("citations.csv").openStream();
             violations = HazelcastConnection.class.getResource("violations.csv").openStream();
@@ -38,7 +46,28 @@ public class HazelcastConnection {
             putCourtsInHazelcast(court);
             putViolationsInHazelcast(violations);
             putCitationsInHazelcast(citation);
+            System.out.println("starting the huge file");
+            reallybigthing = HazelcastConnection.class.getResource("reallybigthing.js").openStream();
+            injectbigthingIntoHazelcast(reallybigthing);
         hazelcastConnection = this;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void injectbigthingIntoHazelcast(InputStream reallybigthing) {
+        ObjectMapper op = new ObjectMapper();
+        try {
+            ReallyBigThing object = op.readValue(reallybigthing, ReallyBigThing.class);
+            Set<Feature> bigSet = hazelcastInstance.getSet(bigThingNamespace);
+            System.out.println("###################");
+            System.out.println("# Had this much " + object.features.size());
+            System.out.println("###################");
+
+            bigSet.addAll(object.features);
+            System.out.println("###################");
+            System.out.println("# Got This Much " + bigSet.size());
+            System.out.println("###################");
         } catch (IOException e) {
             e.printStackTrace();
         }
