@@ -11,8 +11,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Date;
 
 @Startup
