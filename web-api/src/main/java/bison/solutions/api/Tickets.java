@@ -2,14 +2,17 @@ package bison.solutions.api;
 
 import bison.solutions.hazelcast.HazelcastConnection;
 import bison.solutions.domain.Citation;
+import bison.solutions.mapper.DoBMapper;
 import bison.solutions.mapper.EndMapper;
 import bison.solutions.mapper.FirstAndLastNameMapper;
+import bison.solutions.mapper.LicenseMapper;
 import bison.solutions.reducer.ListReducer;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
 import javax.ws.rs.*;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +49,20 @@ public class Tickets {
     @Path("/FirstName/{firstName}/LastName/{lastName}/DoB/{dateOfBirth}")
     public List<Citation> getTicketsByNameAndDoB(@PathParam("firstName") String firstName,
                                                @PathParam("lastName") String lastName,
-                                               @PathParam("dateOfBirth") String dateOfBirth) {
+                                               @PathParam("dateOfBirth") String dateOfBirth) throws ExecutionException, InterruptedException {
 
-        return null;
+        hazelcastConnection = HazelcastConnection.hazelcastConnection;
+        JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.CitationNamespace);
+        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
+        Job<String, Citation> jobs = jobTracker.newJob(source);
+
+        Map<String, List<Citation>> map = jobs.mapper(new FirstAndLastNameMapper(firstName, lastName, new DoBMapper(new Date(Long.parseLong(dateOfBirth)), new EndMapper<>())))
+                .reducer(new ListReducer<>())
+                .submit().get();
+
+        List<Citation> returnMe = new LinkedList<>();
+        map.values().stream().forEach(returnMe::addAll);
+        return returnMe;
     }
 
     @GET
@@ -58,7 +72,21 @@ public class Tickets {
     public Citation getTicketByNameDoBAndLicenseNumber(@PathParam("firstName") String firstName,
                                                      @PathParam("lastName") String lastName,
                                                      @PathParam("dateOfBirth") String dateOfBirth,
-                                                     @PathParam("license") String license) {
-        return null;
+                                                     @PathParam("license") String license) throws ExecutionException, InterruptedException {
+        hazelcastConnection = HazelcastConnection.hazelcastConnection;
+        JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.CitationNamespace);
+        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
+        Job<String, Citation> jobs = jobTracker.newJob(source);
+
+        Map<String, List<Citation>> map = jobs.mapper(
+                new FirstAndLastNameMapper(firstName, lastName,
+                        new DoBMapper(new Date(Long.parseLong(dateOfBirth)),
+                                new LicenseMapper(license, new EndMapper<>()))))
+                .reducer(new ListReducer<>())
+                .submit().get();
+
+        List<Citation> returnMe = new LinkedList<>();
+        map.values().stream().forEach(returnMe::addAll);
+        return returnMe.get(0);
     }
 }
