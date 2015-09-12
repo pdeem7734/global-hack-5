@@ -30,7 +30,8 @@ public class Tickets {
     @Path("/FirstName/{firstName}/LastName/{lastName}/DoB/{dateOfBirth}/License/{license}")
     public Object getTicketByNameDoBAndLicenseNumber(@PathParam("firstName") String firstName,
                                                      @PathParam("lastName") String lastName,
-                                                     @PathParam("dateOfBirth") String dateOfBirth) {
+                                                     @PathParam("dateOfBirth") String dateOfBirth,
+                                                     @PathParam("license") String license) {
         return null;
     }
 }
