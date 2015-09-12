@@ -1,10 +1,9 @@
 package bison.solutions.domain.smaller.things;
 
-import bison.solutions.domain.smaller.things.tiny.things.Geometry;
-import bison.solutions.domain.smaller.things.tiny.things.Property;
+import bison.solutions.domain.smaller.things.tiny.things.Properties;
 
 public class Feature {
-    private String type;
-    private Geometry geometry;
-    private Property property;
+    public String type;
+    public Object geometry;
+    public Properties properties;
 }
