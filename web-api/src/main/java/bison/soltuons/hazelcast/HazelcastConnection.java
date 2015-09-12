@@ -4,12 +4,10 @@ import bison.solutions.domain.Citation;
 import bison.solutions.domain.Violation;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import java.io.*;
@@ -20,17 +18,20 @@ import java.util.Date;
 @Startup
 @Singleton
 public class HazelcastConnection {
-    public HazelcastInstance hazelcastConnection;
+    public static HazelcastConnection hazelcastConnection;
+    public HazelcastInstance hazelcastInstance;
     public final String CitationNamespace = "ciations";
     public final String ViolationNamespace = "violations";
+
     @PostConstruct
     private void makeMeAthing() {
-        hazelcastConnection = HazelcastClient.newHazelcastClient();
+        hazelcastInstance = HazelcastClient.newHazelcastClient();
         File citation = new File(System.getProperty("citations.csv"));
         File violations = new File(System.getProperty("violations.csv"));
 
-        putViolationsInHazelcast(violations);
+        //putViolationsInHazelcast(violations);
         putCitationsInHazelcast(citation);
+        hazelcastConnection = this;
     }
 
 
@@ -42,7 +43,7 @@ public class HazelcastConnection {
 
             String line;
             bufferedReader.readLine();
-            Citation citationToPutInHaz;
+            Citation citationToPutInHaz = null;
             String key = "";
             while((line = bufferedReader.readLine()) != null) {
                 try {
@@ -71,9 +72,9 @@ public class HazelcastConnection {
                         citationToPutInHaz.setCourtDate(new Date(dtf.parseMillis(values[10].split(" ")[0])));
                     } catch (IllegalArgumentException e) {/*literally cancer*/}
 
-                    hazelcastConnection.getMap(CitationNamespace).put(key, citation);
+                    hazelcastInstance.getMap(CitationNamespace).put(key, citationToPutInHaz);
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    hazelcastConnection.getMap(CitationNamespace).put(key, citation);
+                    hazelcastInstance.getMap(CitationNamespace).put(key, citationToPutInHaz);
                 }
             }
         } catch (IOException e) {
@@ -107,7 +108,7 @@ public class HazelcastConnection {
                 violationToPutInHaz.setFineAmount(values[8]);
                 violationToPutInHaz.setCourtCost(values[9]);
 
-                hazelcastConnection.getMap(ViolationNamespace).put(key, violationToPutInHaz);
+                hazelcastInstance.getMap(ViolationNamespace).put(key, violationToPutInHaz);
             }
         } catch (IOException e) {
             e.printStackTrace();
