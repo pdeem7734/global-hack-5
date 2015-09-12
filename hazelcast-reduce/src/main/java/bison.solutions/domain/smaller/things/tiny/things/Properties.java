@@ -20,7 +20,7 @@ public class Properties {
     public String total_population;
     public String demographics_white_percentage;
     public String demographics_black_percentage;
-    public String demographics_asian_precentage;
+    public String demographics_asian_percentage;
     public String demographics_other_percentage;
     public String demographics_below_poverty_percentage;
     public String fines_percentage_of_gr;
