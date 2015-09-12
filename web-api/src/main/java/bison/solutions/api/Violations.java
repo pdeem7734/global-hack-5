@@ -7,6 +7,7 @@ import bison.solutions.mapper.CitationNumberMapper;
 import bison.solutions.mapper.EndMapper;
 import bison.solutions.mapper.ViolationCitationNumberMapper;
 import bison.solutions.reducer.ListReducer;
+import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -29,17 +30,20 @@ public class Violations {
     public List<Violation> getViolationsByCitationNumber(@PathParam("citationNumber") String citationNumber) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.ViolationNamespace);
-        KeyValueSource<String, Violation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.ViolationNamespace));
-        Job<String, Violation> jobs = jobTracker.newJob(source);
+        IMap<String, Violation> besterMap = hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.ViolationNamespace);
+        KeyValueSource<String, Violation> source = KeyValueSource.fromMap(besterMap);
+                Job < String, Violation > jobs = jobTracker.newJob(source);
 
         Map<String, List<Violation>> map = jobs.mapper(
                 new ViolationCitationNumberMapper(Long.parseLong(citationNumber),
-                        new EndMapper<>()))
-                .reducer(new ListReducer<>())
+                        new EndMapper<String, Violation>()))
+                .reducer(new ListReducer<String, Violation>())
                 .submit().get();
 
         List<Violation> returnMe = new LinkedList<>();
-        map.values().stream().forEach(returnMe::addAll);
+        for (List<Violation> list : map.values()) {
+            returnMe.addAll(returnMe);
+        }
         return returnMe;
     }
 }

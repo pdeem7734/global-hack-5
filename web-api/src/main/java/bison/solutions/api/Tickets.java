@@ -4,6 +4,7 @@ import bison.solutions.hazelcast.HazelcastConnection;
 import bison.solutions.domain.Citation;
 import bison.solutions.mapper.*;
 import bison.solutions.reducer.ListReducer;
+import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -27,17 +28,20 @@ public class Tickets {
     public Citation getCitationByCitationNumber(@PathParam("citationNumber") String citationNumber) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.CitationNamespace);
-        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
+        IMap<String, Citation> bestMap = hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace);
+        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(bestMap);
         Job<String, Citation> jobs = jobTracker.newJob(source);
 
         Map<String, List<Citation>> map = jobs.mapper(
                 new CitationNumberMapper(Long.parseLong(citationNumber),
-                        new EndMapper<>()))
-                .reducer(new ListReducer<>())
+                        new EndMapper<String, Citation>()))
+                .reducer(new ListReducer<String, Citation>())
                 .submit().get();
 
         List<Citation> returnMe = new LinkedList<>();
-        map.values().stream().forEach(returnMe::addAll);
+        for (List<Citation> list : map.values()) {
+            returnMe.addAll(returnMe);
+        }
         if (returnMe.size() !=  0) return returnMe.get(0);
         return null;
     }
@@ -51,17 +55,20 @@ public class Tickets {
                                          @PathParam("lastName") String lastName) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.CitationNamespace);
-        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
+        IMap<String, Citation> bestMap = hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace);
+        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(bestMap);
         Job<String, Citation> jobs = jobTracker.newJob(source);
 
         Map<String, List<Citation>> map = jobs.mapper(
                 new FirstAndLastNameMapper(firstName, lastName,
-                        new EndMapper<>()))
-                .reducer(new ListReducer<>())
+                        new EndMapper<String, Citation>()))
+                .reducer(new ListReducer<String, Citation>())
                 .submit().get();
 
         List<Citation> returnMe = new LinkedList<>();
-        map.values().stream().forEach(returnMe::addAll);
+        for (List<Citation> list : map.values()) {
+            returnMe.addAll(returnMe);
+        }
         return returnMe;
     }
 
@@ -75,18 +82,21 @@ public class Tickets {
 
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.CitationNamespace);
-        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
+        IMap<String, Citation> bestMap = hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace);
+        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(bestMap);
         Job<String, Citation> jobs = jobTracker.newJob(source);
 
         Map<String, List<Citation>> map = jobs.mapper(
                 new FirstAndLastNameMapper(firstName, lastName,
                         new DoBMapper(new Date(Long.parseLong(dateOfBirth)),
-                                new EndMapper<>())))
-                .reducer(new ListReducer<>())
+                                new EndMapper<String, Citation>())))
+                .reducer(new ListReducer<String, Citation>())
                 .submit().get();
 
         List<Citation> returnMe = new LinkedList<>();
-        map.values().stream().forEach(returnMe::addAll);
+        for (List<Citation> list : map.values()) {
+            returnMe.addAll(returnMe);
+        }
         return returnMe;
     }
 
@@ -100,19 +110,22 @@ public class Tickets {
                                                      @PathParam("license") String license) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.CitationNamespace);
-        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace));
+        IMap<String, Citation> bestMap = hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CitationNamespace);
+        KeyValueSource<String, Citation> source = KeyValueSource.fromMap(bestMap);
         Job<String, Citation> jobs = jobTracker.newJob(source);
 
         Map<String, List<Citation>> map = jobs.mapper(
                 new FirstAndLastNameMapper(firstName, lastName,
                         new DoBMapper(new Date(Long.parseLong(dateOfBirth)),
                                 new LicenseMapper(license,
-                                        new EndMapper<>()))))
-                .reducer(new ListReducer<>())
+                                        new EndMapper<String, Citation>()))))
+                .reducer(new ListReducer<String, Citation>())
                 .submit().get();
 
         List<Citation> returnMe = new LinkedList<>();
-        map.values().stream().forEach(returnMe::addAll);
+        for (List<Citation> list : map.values()) {
+            returnMe.addAll(returnMe);
+        }
         return returnMe.get(0);
     }
 }

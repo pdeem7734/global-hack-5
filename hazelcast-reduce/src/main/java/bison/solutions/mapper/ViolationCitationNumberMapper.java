@@ -6,10 +6,10 @@ import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
 public class ViolationCitationNumberMapper implements Mapper<String, Violation, String, Violation> {
-    Mapper<String, Citation, String, Citation> delegationMapper;
+    Mapper<String, Violation, String, Violation> delegationMapper;
     Long citationNumber;
 
-    public ViolationCitationNumberMapper(long citationNumber, Mapper<String, Citation, String, Citation> delegationMapper) {
+    public ViolationCitationNumberMapper(long citationNumber, Mapper<String, Violation, String, Violation> delegationMapper) {
         this.delegationMapper = delegationMapper;
         this.citationNumber = citationNumber;
 
