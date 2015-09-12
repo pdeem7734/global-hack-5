@@ -1,6 +1,8 @@
 package bison.solutions.domain.smaller.things.tiny.things;
 
-public class Properties {
+import java.io.Serializable;
+
+public class Properties implements Serializable {
     public String court_id;
     public String court_name;
     public String addr_1;

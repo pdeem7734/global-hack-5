@@ -1,9 +1,7 @@
 package bison.solutions.api;
 
-import bison.solutions.domain.Citation;
 import bison.solutions.domain.Violation;
 import bison.solutions.hazelcast.HazelcastConnection;
-import bison.solutions.mapper.CitationNumberMapper;
 import bison.solutions.mapper.EndMapper;
 import bison.solutions.mapper.ViolationCitationNumberMapper;
 import bison.solutions.reducer.ListReducer;
@@ -42,7 +40,7 @@ public class Violations {
 
         List<Violation> returnMe = new LinkedList<>();
         for (List<Violation> list : map.values()) {
-            returnMe.addAll(returnMe);
+            returnMe.addAll(list);
         }
         return returnMe;
     }
