@@ -10,11 +10,11 @@ public class Courts {
     HazelcastConnection hazelcastConnection;
 
 
-    @GET
+    @POST
     @Consumes("*/*")
     @Produces("application/json")
-    @Path("/Municipality/{municipality}")
-    public Court getCourtByMunicipality(@PathParam("municipality") String municipality) {
+    @Path("/Municipality")
+    public Court getCourtByMunicipality(String municipality) {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         return (Court) hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CourtNamespace).get(municipality);
     }
