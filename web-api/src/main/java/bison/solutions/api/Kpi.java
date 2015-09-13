@@ -136,4 +136,27 @@ public class Kpi {
         }
         return returnMe;
     }
+
+    @POST
+    @Consumes("*/*")
+    @Produces("application/json")
+    @Path("/Municipality/TotalPopAndBelowPoverty")
+    public List<StringStringWrapperFacade> getTotalPopDonut(String municipality) throws ExecutionException, InterruptedException {
+        hazelcastConnection = HazelcastConnection.hazelcastConnection;
+        JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
+        ISet<Feature> bestestSet = hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
+        KeyValueSource<String, Feature> source = KeyValueSource.fromSet(bestestSet);
+        Job<String, Feature> jobs = jobTracker.newJob(source);
+
+        Map<String, List<StringStringWrapperFacade>> map = jobs.mapper(
+                new MunicipalityTotalPopAndBelowPovertyKpiMapper(municipality))
+                .reducer(new ListReducer<String, StringStringWrapperFacade>())
+                .submit().get();
+
+        List<StringStringWrapperFacade> returnMe = new LinkedList<>();
+        for(List<StringStringWrapperFacade> list : map.values()) {
+            returnMe.addAll(list);
+        }
+        return returnMe;
+    }
 }
