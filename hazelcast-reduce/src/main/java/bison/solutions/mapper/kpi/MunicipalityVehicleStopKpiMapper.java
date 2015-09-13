@@ -17,7 +17,11 @@ public class MunicipalityVehicleStopKpiMapper implements Mapper<String, Feature,
         if (feature.properties.court_name.equals(municipality)) {
 
             StringStringWrapperFacade stringStringWrapperFacade = new StringStringWrapperFacade();
+            stringStringWrapperFacade.thing0 = "Total Population";
+            stringStringWrapperFacade.thing1 = feature.properties.total_population;
+            context.emit(municipality, stringStringWrapperFacade);
 
+            stringStringWrapperFacade = new StringStringWrapperFacade();
             stringStringWrapperFacade.thing0 = "Asian Vehicle Stops";
             stringStringWrapperFacade.thing1 = feature.properties.asian_vehicle_stops;
             context.emit(municipality, stringStringWrapperFacade);
