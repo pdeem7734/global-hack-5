@@ -1,5 +1,26 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<link rel="stylesheet" href="http://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
+<link rel="stylesheet" href="http://js.arcgis.com/3.14/dojox/widget/ColorPicker/ColorPicker.css">
+<link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css">
+<style>
+    html, body, #map {
+        height:100%;
+        width:100%;
+        margin:0;
+        padding:0;
+    }
+    .dojoxColorPicker {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        -moz-box-shadow: 0 0 7px #888;
+        -webkit-box-shadow: 0 0 7px #888;
+        box-shadow: 0 0 7px #888;
+    }
+</style>
+<script src="http://js.arcgis.com/3.14/"></script>
+
 <style>
 
     body {
@@ -135,3 +156,5 @@
         })
     }
 </script>
+<div id="map"></div>
+</body>

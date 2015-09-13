@@ -161,7 +161,7 @@ public class Kpi {
         return returnMe;
     }
 
-    @POST
+    @GET
     @Produces("application/json")
     @Path("/Municipality/Names")
     public List<String> getDonuts() {
