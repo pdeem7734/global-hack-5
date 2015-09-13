@@ -41,13 +41,13 @@
         contentType: "application/json; charset=UTF-8",
         success: function (data) {
             data.forEach(function(stringName) {
-                doThing(stringName);
+                doThing(stringName, "VehicleStops");
             })
         }
     });
 
 
-    function doThing(place) {
+    function doThing(place, typeOfThing) {
 
         var pie = d3.layout.pie()
                 .sort(null)
@@ -55,7 +55,7 @@
 
         return $.ajax({
             type: "POST",
-            url: "http://localhost:8080/web-api-0.1/Kpi/Municipality/VehicleStops",
+            url: "http://localhost:8080/web-api-0.1/Kpi/Municipality/" + typeOfThing,
             data: place,
             dataType: "json",
             contentType: "application/json; charset=UTF-8",
