@@ -165,6 +165,7 @@ public class Kpi {
     @Produces("application/json")
     @Path("/Municipality/Names")
     public List<String> getDonuts() {
+        hazelcastConnection = HazelcastConnection.hazelcastConnection;
         ISet<Feature> features =  HazelcastConnection.hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
         List<String> donuts = new ArrayList<>();
         for (Feature feature : features) {
