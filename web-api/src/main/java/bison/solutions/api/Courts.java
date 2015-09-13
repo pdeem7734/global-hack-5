@@ -3,6 +3,7 @@ package bison.solutions.api;
 import bison.solutions.domain.Court;
 import bison.solutions.hazelcast.HazelcastConnection;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
 
 @Path("Court")
