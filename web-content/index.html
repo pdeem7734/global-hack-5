@@ -6,85 +6,129 @@
         font: 10px sans-serif;
     }
 
-    svg {
-        padding: 10px 0 0 10px;
-    }
-
-    .arc {
+    .arc path {
         stroke: #fff;
     }
 
 </style>
 <body>
+<div style="position: fixed;
+    top: 0;
+    left: 0;
+    padding: 5px 10px;"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"></script>
 <script>
-
-    var radius = 74,
-            padding = 10;
-
+    var legendBuilt = false;
     var color = d3.scale.ordinal()
-            .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+            .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c"]);
+
+    var width = 300,
+            height = 300,
+            radius = Math.min(width, height) / 2;
 
     var arc = d3.svg.arc()
-            .outerRadius(radius)
-            .innerRadius(radius - 30);
+            .outerRadius(radius - 10)
+            .innerRadius(radius - 80);
 
-    var pie = d3.layout.pie()
-            .sort(null)
-            .value(function(d) { return d.population; });
-
-    d3.csv("data.csv", function(error, data) {
-        if (error) throw error;
-
-        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "State"; }));
-
-        data.forEach(function(d) {
-            d.ages = color.domain().map(function(name) {
-                return {name: name, population: +d[name]};
-            });
-        });
-
-        var legend = d3.select("body").append("svg")
-                .attr("class", "legend")
-                .attr("width", radius * 2)
-                .attr("height", radius * 2)
-                .selectAll("g")
-                .data(color.domain().slice().reverse())
-                .enter().append("g")
-                .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
-        legend.append("rect")
-                .attr("width", 18)
-                .attr("height", 18)
-                .style("fill", color);
-
-        legend.append("text")
-                .attr("x", 24)
-                .attr("y", 9)
-                .attr("dy", ".35em")
-                .text(function(d) { return d; });
-
-        var svg = d3.select("body").selectAll(".pie")
-                .data(data)
-                .enter().append("svg")
-                .attr("class", "pie")
-                .attr("width", radius * 2)
-                .attr("height", radius * 2)
-                .append("g")
-                .attr("transform", "translate(" + radius + "," + radius + ")");
-
-        svg.selectAll(".arc")
-                .data(function(d) { return pie(d.ages); })
-                .enter().append("path")
-                .attr("class", "arc")
-                .attr("d", arc)
-                .style("fill", function(d) { return color(d.data.name); });
-
-        svg.append("text")
-                .attr("dy", ".35em")
-                .style("text-anchor", "middle")
-                .text(function(d) { return d.State; });
-
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/web-api-0.1/Kpi/Municipality/Names",
+        dataType: "json",
+        contentType: "application/json; charset=UTF-8",
+        success: function (data) {
+            data.forEach(function(stringName) {
+                doThing(stringName);
+            })
+        }
     });
 
+
+    function doThing(place) {
+
+        var pie = d3.layout.pie()
+                .sort(null)
+                .value(function(d) { return d.thing1; });
+
+        return $.ajax({
+            type: "POST",
+            url: "http://localhost:8080/web-api-0.1/Kpi/Municipality/VehicleStops",
+            data: place,
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            success: function (data) {
+                data = data.slice(1, data.size);
+                var shouldAttemptDisplay = false;
+
+                data.forEach(function (d) {
+                    d.thing1 = d.thing1.replace(',', '');
+                    if (d.thing1 != "") shouldAttemptDisplay = true;
+                    d.thing1 = Number(d.thing1.replace(',', ''));
+                });
+
+                color.domain(d3.keys(data));
+
+                data.forEach(function (d) {
+                    d.thing1 = +d.thing1;
+                });
+
+                if (!legendBuilt) {
+                    legendBuilt = true;
+                    var legend = d3.select("div").insert("svg", ":first-child")
+                            .attr("class", "legend")
+                            .attr("width", 100)
+                            .attr("height", 100)
+                            .style("background", "rgba(255, 255, 255, .6)")
+                            .selectAll("g")
+                            .data(pie(data))
+                            .enter().append("g")
+                            .attr("transform", function (d, i) {
+                                return "translate(0," + i * 20 + ")";
+                            });
+
+                    legend.append("rect")
+                            .attr("width", 18)
+                            .attr("height", 18)
+                            .style("fill", function (d) {
+                                return color(d.data.thing0);
+                            });
+
+                    legend.append("text")
+                            .attr("x", 24)
+                            .attr("y", 9)
+                            .attr("dy", ".35em")
+                            .text(function (d) {
+                                return d.data.thing0;
+                            });
+                }
+                if (shouldAttemptDisplay) {
+
+                    var svg = d3.select("body").append("svg")
+                            .attr("width", width)
+                            .attr("height", height)
+                            .append("g")
+                            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+                    var g = svg.selectAll(".arc")
+                            .data(pie(data))
+                            .enter().append("g")
+                            .attr("class", "arc");
+
+                    g.append("path")
+                            .attr("d", arc)
+                            .style("fill", function (d) {
+                                return color(d.data.thing0);
+                            });
+
+                    g.append("text")
+                            .attr("dy", ".35em")
+                            .style("text-anchor", "middle")
+                            .text(function (d) {
+                                return place;
+                            });
+                }
+
+            }
+        })
+    }
 </script>
