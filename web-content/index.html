@@ -6,16 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>Bison</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"></script>
+    <link href="http://bisonsolutions.cloudapp.net/assets/bootstrap.min.css?body=1" rel="stylesheet" media="all" data-turbolinks-track="true">
+    <link href="http://bisonsolutions.cloudapp.net/stylesheets/cover.css.bak.css" rel="stylesheet" media="all" data-turbolinks-track="true">
+    <link href="http://bisonsolutions.cloudapp.net/assets/application.css?body=1" rel="stylesheet" media="all" data-turbolinks-track="true">
 
-    <link href="http://localhost:3000/assets/bootstrap.min.css?body=1" rel="stylesheet" media="all" data-turbolinks-track="true">
-    <link href="http://localhost:3000/stylesheets/cover.css.bak.css" rel="stylesheet" media="all" data-turbolinks-track="true">
-    <link href="http://localhost:3000/assets/application.css?body=1" rel="stylesheet" media="all" data-turbolinks-track="true">
-
-    <script src="http://localhost:3000/assets/bootstrap.min.js?body=1"></script>
+    <script src="http://bisonsolutions.cloudapp.net/assets/bootstrap.min.js?body=1"></script>
 </head>
 <body>
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button class="navbar-toggle collapsed" aria-expanded="false" aria-controls="navbar" type="button" data-toggle="collapse" data-target="#navbar">
@@ -24,12 +25,21 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="http://localhost:3000/">Bison</a>
+            <a class="navbar-brand" href="http://bisonsolutions.cloudapp.net">Bison</a>
         </div>
-        <div class="collapse navbar-collapse" id="navbar">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="http://localhost:3000/tickets">Tickets</a></li>
-                <li><a href="http://localhost:3000/metrics">Metrics</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" role="button" aria-expanded="false" href="#" data-toggle="dropdown">Reports<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a style="pointer-events: none">Enforcement by Demographic</a></li>
+                        <li class="divider"></li>
+                        <li><a onclick="superDoThings('VehicleStops')">Traffic Stops</a></li>
+                        <li><a onclick="superDoThings('SearchRate')">Searches</a></li>
+                        <li><a onclick="superDoThings('ContrabandHitRate')">Contraband Findings</a></li>
+                        <li><a onclick="superDoThings('ArrestRate')">Arrests</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
@@ -40,8 +50,6 @@
     left: 0;
     padding: 5px 10px;"></div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"></script>
 <script>
     var legendBuilt = false;
 //    var color = d3.scale.ordinal()
@@ -58,17 +66,22 @@
             .outerRadius(radius - 10)
             .innerRadius(radius - 80);
 
-    $.ajax({
-        type: "GET",
-        url: "http://localhost:8080/web-api-0.1/Kpi/Municipality/Names",
-        dataType: "json",
-        contentType: "application/json; charset=UTF-8",
-        success: function (data) {
-            data.forEach(function(stringName) {
-                doThing(stringName, "VehicleStops");
-            })
-        }
-    });
+    function superDoThings(TypeofSuperThings) {
+        d3.select("#thisIsMyEverythingElse")[0][0].innerHTML = "<div id=\"thisIsMyThing\" style=\"position: fixed;top: 70px;left: 0;padding: 5px 10px;\"></div>";
+        legendBuilt = false;
+        $.ajax({
+            type: "GET",
+            url: "http://bison.solutions.com:8080/web-api-0.1/Kpi/Municipality/Names",
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            success: function (data) {
+                data.forEach(function (stringName) {
+                    doThing(stringName, TypeofSuperThings);
+                })
+            }
+        });
+    }
+
 
 
     function doThing(place, typeOfThing) {
@@ -79,7 +92,7 @@
 
         return $.ajax({
             type: "POST",
-            url: "http://localhost:8080/web-api-0.1/Kpi/Municipality/" + typeOfThing,
+            url: "http://bison.solutions.com:8080/web-api-0.1/Kpi/Municipality/" + typeOfThing,
             data: place,
             dataType: "json",
             contentType: "application/json; charset=UTF-8",
@@ -129,12 +142,13 @@
                             });
                 }
                 if (shouldAttemptDisplay) {
+                        var svg = d3.select("#thisIsMyEverythingElse").append("svg")
+                                .attr("width", width)
+                                .attr("height", height)
+                                .attr("onclick", "window.open('http://bisonsolutions.cloudapp.net/metrics/show?place="+ place +"')")
+                                .append("g")
+                                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-                    var svg = d3.select("#thisIsMyEverythingElse").append("svg")
-                            .attr("width", width)
-                            .attr("height", height)
-                            .append("g")
-                            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
                     var g = svg.selectAll(".arc")
                             .data(pie(data))
