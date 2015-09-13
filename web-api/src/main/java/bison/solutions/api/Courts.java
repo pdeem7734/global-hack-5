@@ -16,6 +16,6 @@ public class Courts {
     @Path("/Municipality")
     public Court getCourtByMunicipality(String municipality) {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
-        return (Court) hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CourtNamespace).get(municipality);
+        return (Court) hazelcastConnection.hazelcastInstance.getMap(hazelcastConnection.CourtNamespace).get(municipality.toUpperCase());
     }
 }
