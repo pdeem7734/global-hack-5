@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css">
+    <style>
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 40%;
+        }
+        body {
+            background-color: #FFF;
+            overflow: hidden;
+            font-family: "Trebuchet MS";
+        }
+    </style>
+    <script src="http://js.arcgis.com/3.14/"></script>
+    <script>
+        makeMeAMap(38.62, -90.21);
+        function makeMeAMap(latude, longitude) {
+            var map;
+            require(["esri/map", "dojo/domReady!"], function (Map) {
+                map = new Map("map", {
+                    basemap: "streets",  //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
+                    center: [longitude, latude],
+                    zoom: 13
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+<div id="map">
+</div>
+
+</body>
+</html>
