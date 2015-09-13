@@ -30,6 +30,7 @@ public class HazelcastConnection {
     public final String ViolationNamespace = "violations";
     public final String CourtNamespace = "court";
     public final String bigThingNamespace = "bigthing";
+    public final String MuniReduceNamespace = "muniReduce";
 
     @PostConstruct
     private void makeMeAthing() {
