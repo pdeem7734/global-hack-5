@@ -1,42 +1,45 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<link rel="stylesheet" href="http://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
-<link rel="stylesheet" href="http://js.arcgis.com/3.14/dojox/widget/ColorPicker/ColorPicker.css">
-<link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css">
-<style>
-    html, body, #map {
-        height:100%;
-        width:100%;
-        margin:0;
-        padding:0;
-    }
-    .dojoxColorPicker {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        -moz-box-shadow: 0 0 7px #888;
-        -webkit-box-shadow: 0 0 7px #888;
-        box-shadow: 0 0 7px #888;
-    }
-</style>
-<script src="http://js.arcgis.com/3.14/"></script>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Bison</title>
 
-<style>
+    <link href="http://localhost:3000/assets/bootstrap.min.css?body=1" rel="stylesheet" media="all" data-turbolinks-track="true">
+    <link href="http://localhost:3000/stylesheets/cover.css.bak.css" rel="stylesheet" media="all" data-turbolinks-track="true">
+    <link href="http://localhost:3000/assets/application.css?body=1" rel="stylesheet" media="all" data-turbolinks-track="true">
 
-    body {
-        font: 10px sans-serif;
-    }
-
-    .arc path {
-        stroke: #fff;
-    }
-
-</style>
+    <script src="http://localhost:3000/assets/bootstrap.min.js?body=1"></script>
+</head>
 <body>
-<div style="position: fixed;
-    top: 0;
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" aria-expanded="false" aria-controls="navbar" type="button" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://localhost:3000/">Bison</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="http://localhost:3000/tickets">Tickets</a></li>
+                <li><a href="http://localhost:3000/metrics">Metrics</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div style="padding-top: 70px" id="thisIsMyEverythingElse">
+    <div id="thisIsMyThing" style="position: fixed;
+    top: 70px;
     left: 0;
     padding: 5px 10px;"></div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"></script>
 <script>
@@ -56,7 +59,7 @@
             .innerRadius(radius - 80);
 
     $.ajax({
-        type: "POST",
+        type: "GET",
         url: "http://localhost:8080/web-api-0.1/Kpi/Municipality/Names",
         dataType: "json",
         contentType: "application/json; charset=UTF-8",
@@ -98,7 +101,7 @@
 
                 if (!legendBuilt) {
                     legendBuilt = true;
-                    var legend = d3.select("div").insert("svg", ":first-child")
+                    var legend = d3.select("#thisIsMyThing").insert("svg", ":first-child")
                             .attr("class", "legend")
                             .attr("width", 100)
                             .attr("height", 100)
@@ -127,7 +130,7 @@
                 }
                 if (shouldAttemptDisplay) {
 
-                    var svg = d3.select("body").append("svg")
+                    var svg = d3.select("#thisIsMyEverythingElse").append("svg")
                             .attr("width", width)
                             .attr("height", height)
                             .append("g")
@@ -156,5 +159,4 @@
         })
     }
 </script>
-<div id="map"></div>
 </body>
