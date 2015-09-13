@@ -165,12 +165,31 @@ public class Kpi {
     @Produces("application/json")
     @Path("/Municipality/Names")
     public List<String> getDonuts() {
-        hazelcastConnection = HazelcastConnection.hazelcastConnection;
-        ISet<Feature> features = hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
+        ISet<Feature> features =  HazelcastConnection.hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
         List<String> donuts = new ArrayList<>();
         for (Feature feature : features) {
             donuts.add(feature.properties.court_name);
         }
         return donuts;
+    }
+
+    @POST
+    @Consumes("*/*")
+    @Produces("application/json")
+    @Path("/Municipality/Full")
+    public Feature getMunicipality(String municipality) throws ExecutionException, InterruptedException {
+        hazelcastConnection = HazelcastConnection.hazelcastConnection;
+        JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
+        ISet<Feature> bestestSet = hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
+        KeyValueSource<String, Feature> source = KeyValueSource.fromSet(bestestSet);
+        Job<String, Feature> jobs = jobTracker.newJob(source);
+
+        Map<String, List<Feature>> map = jobs.mapper(
+                new MunicipalityFullObjectKpiMapper(municipality))
+                .reducer(new ListReducer<String, Feature>())
+                .submit().get();
+
+        List<List<Feature>> features = new ArrayList<>(map.values());
+        return features.get(0).get(0);
     }
 }
