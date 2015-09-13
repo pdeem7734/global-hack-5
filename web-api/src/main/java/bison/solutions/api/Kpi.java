@@ -10,6 +10,7 @@ import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
 import javax.ws.rs.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -158,5 +159,18 @@ public class Kpi {
             returnMe.addAll(list);
         }
         return returnMe;
+    }
+
+    @POST
+    @Produces("application/json")
+    @Path("/Municipality/Names")
+    public List<String> getDonuts() {
+        hazelcastConnection = HazelcastConnection.hazelcastConnection;
+        ISet<Feature> features = hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
+        List<String> donuts = new ArrayList<>();
+        for (Feature feature : features) {
+            donuts.add(feature.properties.court_name);
+        }
+        return donuts;
     }
 }
