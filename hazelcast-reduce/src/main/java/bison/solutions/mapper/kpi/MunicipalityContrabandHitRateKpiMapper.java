@@ -15,31 +15,31 @@ public class MunicipalityContrabandHitRateKpiMapper implements Mapper<String, Fe
         if (feature.properties.court_name.equals(municipality)) {
 
             StringStringWrapperFacade stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "asian_contraband_hit_rate";
+            stringStringWrapperFacade.thing0 = "Asian";
             stringStringWrapperFacade.thing1 = feature.properties.asian_contraband_hit_rate;
             context.emit(municipality, stringStringWrapperFacade);
 
             stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "black_contraband_hit_rate";
+            stringStringWrapperFacade.thing0 = "Black";
             stringStringWrapperFacade.thing1 = feature.properties.black_contraband_hit_rate;
             context.emit(municipality, stringStringWrapperFacade);
 
             stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "indian_contraband_hit_rate";
+            stringStringWrapperFacade.thing0 = "Indian";
             stringStringWrapperFacade.thing1 = feature.properties.indian_contraband_hit_rate;
             context.emit(municipality, stringStringWrapperFacade);
 
             stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "white_contraband_hit_rate";
+            stringStringWrapperFacade.thing0 = "White";
             stringStringWrapperFacade.thing1 = feature.properties.white_contraband_hit_rate;
             context.emit(municipality, stringStringWrapperFacade);
 
             stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "hispanic_contraband_hit_rate";
+            stringStringWrapperFacade.thing0 = "Hispanic";
             stringStringWrapperFacade.thing1 = feature.properties.hispanic_contraband_hit_rate;
 
             stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "other_contraband_hit_rate";
+            stringStringWrapperFacade.thing0 = "Other";
             stringStringWrapperFacade.thing1 = feature.properties.other_contraband_hit_rate;
             context.emit(municipality, stringStringWrapperFacade);
         }

@@ -64,8 +64,10 @@ public class HazelcastConnection {
             System.out.println("###################");
             System.out.println("# Had this much " + object.features.size());
             System.out.println("###################");
-
-            bigSet.addAll(object.features);
+            for (Feature bigThang : object.features) {
+                bigThang.geometry = null;
+                bigSet.add(bigThang);
+            };
             System.out.println("###################");
             System.out.println("# Got This Much " + bigSet.size());
             System.out.println("###################");

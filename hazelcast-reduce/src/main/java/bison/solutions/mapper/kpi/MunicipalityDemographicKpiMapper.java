@@ -8,39 +8,31 @@ public class MunicipalityDemographicKpiMapper implements Mapper<String, Feature,
 
     public MunicipalityDemographicKpiMapper(String municipality) { this.municipality = municipality; }
 
-    @Deprecated
+    @Override
     public void map(String s, Feature feature, Context<String, StringStringWrapperFacade> context) {
         if (feature.properties.court_name.equals(municipality)) {
 
             StringStringWrapperFacade stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "Total Population";
-            stringStringWrapperFacade.thing1 = feature.properties.total_population;
-            context.emit(municipality, stringStringWrapperFacade);
 
-            stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "Demographics Asian Percentage";
+            stringStringWrapperFacade.thing0 = "Asian";
             stringStringWrapperFacade.thing1= feature.properties.demographics_asian_percentage;
             context.emit(municipality, stringStringWrapperFacade);
 
             stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "Demographics Black Percentage";
+            stringStringWrapperFacade.thing0 = "Black";
             stringStringWrapperFacade.thing1 = feature.properties.demographics_black_percentage;
             context.emit(municipality, stringStringWrapperFacade);
 
             stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "Demographics White Percentage";
+            stringStringWrapperFacade.thing0 = "White";
             stringStringWrapperFacade.thing1 = feature.properties.demographics_white_percentage;
             context.emit(municipality, stringStringWrapperFacade);
 
             stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "Demographics Other Percentage";
+            stringStringWrapperFacade.thing0 = "Other";
             stringStringWrapperFacade.thing1 = feature.properties.demographics_other_percentage;
             context.emit(municipality, stringStringWrapperFacade);
 
-            stringStringWrapperFacade = new StringStringWrapperFacade();
-            stringStringWrapperFacade.thing0 = "Demographics Below Poverty Percentage";
-            stringStringWrapperFacade.thing1 = feature.properties.demographics_below_poverty_percentage;
-            context.emit(municipality, stringStringWrapperFacade);
         }
     }
 }
