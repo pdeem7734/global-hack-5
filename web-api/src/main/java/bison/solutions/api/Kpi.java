@@ -3,6 +3,7 @@ package bison.solutions.api;
 import bison.solutions.domain.smaller.things.Feature;
 import bison.solutions.hazelcast.HazelcastConnection;
 import bison.solutions.mapper.kpi.MunicipalityDemographicKpiMapper;
+import bison.solutions.mapper.kpi.MunicipalitySearchRateKpiMapper;
 import bison.solutions.mapper.kpi.MunicipalityVehicleStopKpiMapper;
 import bison.solutions.reducer.ListReducer;
 import com.hazelcast.core.ISet;
@@ -83,7 +84,7 @@ public class Kpi {
         Job< String, Feature > jobs = jobTracker.newJob(source);
 
         Map<String, List<Feature>> map = jobs.mapper(
-                new MunicipalityDemographicKpiMapper(municipality))
+                new MunicipalitySearchRateKpiMapper(municipality))
                 .reducer(new ListReducer<String, Feature>())
                 .submit().get();
 
