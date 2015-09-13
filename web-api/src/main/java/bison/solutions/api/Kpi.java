@@ -99,7 +99,7 @@ public class Kpi {
     @GET
     @Consumes("*/*")
     @Produces("application/json")
-    @Path("/Municipality/{municipality}/SearchRate")
+    @Path("/Municipality/{municipality}/ContrabandHitRate")
     public Feature getContrabandHitRateDonut(String municipality) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
@@ -118,4 +118,6 @@ public class Kpi {
         }
         return returnMe.get(0);
     }
+
+
 }
