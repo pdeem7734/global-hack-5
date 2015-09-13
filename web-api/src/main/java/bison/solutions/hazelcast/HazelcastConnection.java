@@ -89,7 +89,7 @@ public class HazelcastConnection {
                     DateTimeFormatter dtf = DateTimeFormat.forPattern("MM/dd/yyyy");
 
                     key = values[0];
-
+                    key = key.toUpperCase();
                     court.setMunicipality(key);
                     court.setMunicipalCourt(values[1]);
                     court.setMunicipalWebsite(values[2]);
