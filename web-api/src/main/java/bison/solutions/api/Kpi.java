@@ -2,6 +2,7 @@ package bison.solutions.api;
 
 import bison.solutions.domain.smaller.things.Feature;
 import bison.solutions.hazelcast.HazelcastConnection;
+import bison.solutions.mapper.kpi.MunicipalityContrabandHitRateKpiMapper;
 import bison.solutions.mapper.kpi.MunicipalityDemographicKpiMapper;
 import bison.solutions.mapper.kpi.MunicipalitySearchRateKpiMapper;
 import bison.solutions.mapper.kpi.MunicipalityVehicleStopKpiMapper;
@@ -85,6 +86,29 @@ public class Kpi {
 
         Map<String, List<Feature>> map = jobs.mapper(
                 new MunicipalitySearchRateKpiMapper(municipality))
+                .reducer(new ListReducer<String, Feature>())
+                .submit().get();
+
+        List<Feature> returnMe = new LinkedList<>();
+        for (List<Feature> list : map.values()) {
+            returnMe.addAll(list);
+        }
+        return returnMe.get(0);
+    }
+
+    @GET
+    @Consumes("*/*")
+    @Produces("application/json")
+    @Path("/Municipality/{municipality}/SearchRate")
+    public Feature getContrabandHitRateDonut(String municipality) throws ExecutionException, InterruptedException {
+        hazelcastConnection = HazelcastConnection.hazelcastConnection;
+        JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
+        ISet< Feature> bestestSet = hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
+        KeyValueSource<String, Feature> source = KeyValueSource.fromSet(bestestSet);
+        Job< String, Feature > jobs = jobTracker.newJob(source);
+
+        Map<String, List<Feature>> map = jobs.mapper(
+                new MunicipalityContrabandHitRateKpiMapper(municipality))
                 .reducer(new ListReducer<String, Feature>())
                 .submit().get();
 
