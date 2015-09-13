@@ -1,6 +1,8 @@
 package bison.solutions.mapper.kpi;
 
-public class StringStringWrapperFacade {
+import java.io.Serializable;
+
+public class StringStringWrapperFacade implements Serializable {
     public String thing1;
     public String thing0;
 }
