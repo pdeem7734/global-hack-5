@@ -74,20 +74,20 @@ public class Kpi {
     @Consumes("*/*")
     @Produces("application/json")
     @Path("/Municipality/{municipality}/SearchRate")
-    public Feature getSearchRateDonut(String municipality) throws ExecutionException, InterruptedException {
+    public StringStringWrapperFacade getSearchRateDonut(String municipality) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
         ISet< Feature> bestestSet = hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
         KeyValueSource<String, Feature> source = KeyValueSource.fromSet(bestestSet);
         Job< String, Feature > jobs = jobTracker.newJob(source);
 
-        Map<String, List<Feature>> map = jobs.mapper(
+        Map<String, List<StringStringWrapperFacade>> map = jobs.mapper(
                 new MunicipalitySearchRateKpiMapper(municipality))
-                .reducer(new ListReducer<String, Feature>())
+                .reducer(new ListReducer<String, StringStringWrapperFacade>())
                 .submit().get();
 
-        List<Feature> returnMe = new LinkedList<>();
-        for (List<Feature> list : map.values()) {
+        List<StringStringWrapperFacade> returnMe = new LinkedList<>();
+        for (List<StringStringWrapperFacade> list : map.values()) {
             returnMe.addAll(list);
         }
         return returnMe.get(0);
