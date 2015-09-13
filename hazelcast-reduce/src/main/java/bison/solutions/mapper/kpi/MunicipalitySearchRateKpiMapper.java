@@ -15,7 +15,6 @@ public class MunicipalitySearchRateKpiMapper implements Mapper<String, Feature, 
         if (feature.properties.court_name.equals(municipality)) {
 
             StringStringWrapperFacade stringStringWrapperFacade = new StringStringWrapperFacade();
-
             stringStringWrapperFacade.thing0 = "Asian Search Rate";
             stringStringWrapperFacade.thing1 = feature.properties.asian_search_rate;
             context.emit(municipality, stringStringWrapperFacade);

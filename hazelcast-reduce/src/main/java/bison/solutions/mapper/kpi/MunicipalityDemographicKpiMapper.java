@@ -3,23 +3,44 @@ import bison.solutions.domain.smaller.things.Feature;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
-public class MunicipalityDemographicKpiMapper implements Mapper<String, Feature, String, Feature> {
+public class MunicipalityDemographicKpiMapper implements Mapper<String, Feature, String, StringStringWrapperFacade> {
     private String municipality;
 
     public MunicipalityDemographicKpiMapper(String municipality) { this.municipality = municipality; }
 
     @Deprecated
-    public void map(String s, Feature feature, Context<String, Feature> context) {
+    public void map(String s, Feature feature, Context<String, StringStringWrapperFacade> context) {
         if (feature.properties.court_name.equals(municipality)) {
 
-            Feature newFeature = new Feature();
-            newFeature.properties.demographics_asian_percentage = feature.properties.demographics_asian_percentage;
-            newFeature.properties.demographics_black_percentage = feature.properties.demographics_black_percentage;
-            newFeature.properties.demographics_white_percentage = feature.properties.demographics_white_percentage;
-            newFeature.properties.demographics_other_percentage = feature.properties.demographics_other_percentage;
-            newFeature.properties.demographics_below_poverty_percentage = feature.properties.demographics_below_poverty_percentage;
+            StringStringWrapperFacade stringStringWrapperFacade = new StringStringWrapperFacade();
+            stringStringWrapperFacade.thing0 = "Total Population";
+            stringStringWrapperFacade.thing1 = feature.properties.total_population;
+            context.emit(municipality, stringStringWrapperFacade);
 
-            context.emit(municipality, newFeature);
+            stringStringWrapperFacade = new StringStringWrapperFacade();
+            stringStringWrapperFacade.thing0 = "demographics_asian_percentage";
+            stringStringWrapperFacade.thing1= feature.properties.demographics_asian_percentage;
+            context.emit(municipality, stringStringWrapperFacade);
+
+            stringStringWrapperFacade = new StringStringWrapperFacade();
+            stringStringWrapperFacade.thing0 = "demographics_black_percentage";
+            stringStringWrapperFacade.thing1 = feature.properties.demographics_black_percentage;
+            context.emit(municipality, stringStringWrapperFacade);
+
+            stringStringWrapperFacade = new StringStringWrapperFacade();
+            stringStringWrapperFacade.thing0 = "demographics_white_percentage";
+            stringStringWrapperFacade.thing1 = feature.properties.demographics_white_percentage;
+            context.emit(municipality, stringStringWrapperFacade);
+
+            stringStringWrapperFacade = new StringStringWrapperFacade();
+            stringStringWrapperFacade.thing0 = "demographics_other_percentage";
+            stringStringWrapperFacade.thing1 = feature.properties.demographics_other_percentage;
+            context.emit(municipality, stringStringWrapperFacade);
+
+            stringStringWrapperFacade = new StringStringWrapperFacade();
+            stringStringWrapperFacade.thing0 = "demographics_below_poverty_percentage";
+            stringStringWrapperFacade.thing1 = feature.properties.demographics_below_poverty_percentage;
+            context.emit(municipality, stringStringWrapperFacade);
         }
     }
 }

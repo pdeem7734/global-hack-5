@@ -9,10 +9,7 @@ import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +20,10 @@ import java.util.concurrent.ExecutionException;
 public class Kpi {
     HazelcastConnection hazelcastConnection;
 
-    @GET
+    @POST
     @Consumes("*/*")
     @Produces("application/json")
-    @Path("/Municipality/{municipality}/VehicleStops")
+    @Path("/Municipality/VehicleStops")
     public StringStringWrapperFacade getVehicleStopsDonut(String municipality) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
@@ -46,34 +43,34 @@ public class Kpi {
         return returnMe.get(0);
     }
 
-    @GET
+    @POST
     @Consumes("*/*")
     @Produces("application/json")
-    @Path("/Municipality/{municipality}/Demographics")
-    public Feature getDemographicsDonut(String municipality) throws ExecutionException, InterruptedException {
+    @Path("/Municipality/Demographics")
+    public StringStringWrapperFacade getDemographicsDonut(String municipality) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
         ISet< Feature> bestestSet = hazelcastConnection.hazelcastInstance.getSet(hazelcastConnection.bigThingNamespace);
         KeyValueSource<String, Feature> source = KeyValueSource.fromSet(bestestSet);
         Job< String, Feature > jobs = jobTracker.newJob(source);
 
-        Map<String, List<Feature>> map = jobs.mapper(
+        Map<String, List<StringStringWrapperFacade>> map = jobs.mapper(
                 new MunicipalityDemographicKpiMapper(municipality))
-                .reducer(new ListReducer<String, Feature>())
+                .reducer(new ListReducer<String, StringStringWrapperFacade>())
                 .submit().get();
 
-        List<Feature> returnMe = new LinkedList<>();
-        for (List<Feature> list : map.values()) {
+        List<StringStringWrapperFacade> returnMe = new LinkedList<>();
+        for (List<StringStringWrapperFacade> list : map.values()) {
             returnMe.addAll(list);
         }
         return returnMe.get(0);
     }
 
 
-    @GET
+    @POST
     @Consumes("*/*")
     @Produces("application/json")
-    @Path("/Municipality/{municipality}/SearchRate")
+    @Path("/Municipality/SearchRate")
     public StringStringWrapperFacade getSearchRateDonut(String municipality) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
@@ -93,10 +90,10 @@ public class Kpi {
         return returnMe.get(0);
     }
 
-    @GET
+    @POST
     @Consumes("*/*")
     @Produces("application/json")
-    @Path("/Municipality/{municipality}/ContrabandHitRate")
+    @Path("/Municipality/ContrabandHitRate")
     public Feature getContrabandHitRateDonut(String municipality) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
@@ -117,10 +114,10 @@ public class Kpi {
     }
 
 
-    @GET
+    @POST
     @Consumes("*/*")
     @Produces("application/json")
-    @Path("/Municipality/{municipality}/ArrestRate")
+    @Path("/Municipality/ArrestRate")
     public Feature getArrestRateDonut(String municipality) throws ExecutionException, InterruptedException {
         hazelcastConnection = HazelcastConnection.hazelcastConnection;
         JobTracker jobTracker = hazelcastConnection.hazelcastInstance.getJobTracker(hazelcastConnection.MuniReduceNamespace);
